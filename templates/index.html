@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淘宝数据分析</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h2>淘宝数据分析</h2>
+
+    <div class="table-container">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Sales</th>
+                    <th>Product Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 由JavaScript加载数据 -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-scroll">
+        <button id="load-keywords">拆解关键词</button>
+        <button id="load-tree-map">显示树状图</button>
+    </div>
+
+    <!-- 关键词展示 -->
+    <div id="keywords">
+        <h3>提取的关键词:</h3>
+        <ul id="keywords-list"></ul>
+    </div>
+
+    <!-- 树状图展示 -->
+    <div id="tree-map-container" style="display: none;">
+        <h3>产品销量树状图</h3>
+        <img id="treeMapImg" src="" alt="树状图">
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 加载表格数据
+            $.getJSON('/data', function(data) {
+                let rows = '';
+                data.forEach(item => {
+                    rows += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.date}</td>
+                        <td>${item.sales}</td>
+                        <td>${item.product_name}</td>
+                    </tr>`;
+                });
+                $('#data-table tbody').html(rows);
+            });
+
+            // 加载树状图
+            $('#load-tree-map').click(function() {
+                $.getJSON('/generate_tree', function(response) {
+                    if (response.status === 'success') {
+                        $('#treeMapImg').attr('src', response.image_path);
+                        $('#tree-map-container').show();
+                    } else
